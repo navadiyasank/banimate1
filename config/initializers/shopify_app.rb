@@ -11,8 +11,8 @@ ShopifyApp.configure do |config|
   config.session_repository = Shop
   config.webhooks = [
     {
-      topic: 'carts/create',
-      address: "#{ENV['TEST_URL']}/webhooks/carts_create",
+      topic: 'orders/paid',
+      address: "example.ngrok.io/webhooks/orders_paid",
       format: 'json'
     }
   ]
