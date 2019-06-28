@@ -14,6 +14,8 @@
   </head>
 
   <body>
+    <%= render 'layouts/frame' %>
+
     <div class="app-wrapper">
       <div class="app-content">
         <main role="main">
@@ -37,7 +39,7 @@
         <%= yield :javascript %>
       </div>
     <% end %>
-    
+
     <%= render "layouts/footer" %> 
   </body>
 </html>
