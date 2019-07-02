@@ -12,7 +12,7 @@ ShopifyApp.configure do |config|
   config.webhooks = [
     {
       topic: 'app/uninstalled',
-      address: "https://797a170f.ngrok.io/webhooks/app_uninstalled",
+      address: "https://bd059797.ngrok.io/webhooks/app_uninstalled",
       format: 'json'
     }
   ]
