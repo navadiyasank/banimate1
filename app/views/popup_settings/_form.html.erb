@@ -43,7 +43,6 @@
           <div style="--top-bar-background:#00848e; --top-bar-color:#f9fafb; --top-bar-background-lighter:#1d9ba4;">
             <label class="Polaris-Choice" for="Checkbox1"><span class="Polaris-Choice__Control"><span class="Polaris-Checkbox">
             <%= form.check_box :status,class: "Polaris-Checkbox__Input", id: "Checkbox1" %>
-            <!-- <input id="Checkbox1" type="checkbox" class="Polaris-Checkbox__Input" aria-invalid="false" role="checkbox" aria-checked="false" value=""> -->
             <span class="Polaris-Checkbox__Backdrop"></span><span class="Polaris-Checkbox__Icon"><span class="Polaris-Icon"><svg viewBox="0 0 20 20" class="Polaris-Icon__Svg" focusable="false" aria-hidden="true">
               <path d="M8.315 13.859l-3.182-3.417a.506.506 0 0 1 0-.684l.643-.683a.437.437 0 0 1 .642 0l2.22 2.393 4.942-5.327a.437.437 0 0 1 .643 0l.643.684a.504.504 0 0 1 0 .683l-5.91 6.35a.437.437 0 0 1-.642 0"></path>
             </svg></span></span></span></span><span class="Polaris-Choice__Label">Status</span></label></div>
@@ -62,7 +61,8 @@
                   <label class="Polaris-Choice" for="pstnCenter">
                     <span class="Polaris-Choice__Control">
                       <span class="Polaris-RadioButton">
-                        <input id="pstnCenter" name="popup_setting[position]" type="radio" class="Polaris-RadioButton__Input" aria-describedby="disabledHelpText" value="" checked=""><span class="Polaris-RadioButton__Backdrop"></span>
+                        <%= form.radio_button :position,"center",class: "Polaris-RadioButton__Input",id: "pstnCenter" %>
+                        <span class="Polaris-RadioButton__Backdrop"></span>
                         <span class="Polaris-RadioButton__Icon"></span>
                       </span>
                     </span>
@@ -75,7 +75,7 @@
                   <label class="Polaris-Choice" for="pstnRightTop">
                     <span class="Polaris-Choice__Control">
                       <span class="Polaris-RadioButton">
-                        <input id="pstnRightTop" name="popup_setting[position]" type="radio" class="Polaris-RadioButton__Input" aria-describedby="optionalHelpText" value="">
+                        <%= form.radio_button :position,"right_top",class: "Polaris-RadioButton__Input",id: "pstnRightTop" %>
                         <span class="Polaris-RadioButton__Backdrop"></span>
                         <span class="Polaris-RadioButton__Icon"></span>
                       </span>
@@ -89,7 +89,7 @@
                   <label class="Polaris-Choice" for="pstnLeftTop">
                     <span class="Polaris-Choice__Control">
                       <span class="Polaris-RadioButton">
-                        <input id="pstnLeftTop" name="popup_setting[position]" type="radio" class="Polaris-RadioButton__Input" aria-describedby="optionalHelpText" value="">
+                        <%= form.radio_button :position,"left_top",class: "Polaris-RadioButton__Input",id: "pstnLeftTop" %>
                         <span class="Polaris-RadioButton__Backdrop"></span>
                         <span class="Polaris-RadioButton__Icon"></span>
                       </span>
@@ -103,7 +103,7 @@
                   <label class="Polaris-Choice" for="pstnRightBottom">
                     <span class="Polaris-Choice__Control">
                       <span class="Polaris-RadioButton">
-                        <input id="pstnRightBottom" name="popup_setting[position]" type="radio" class="Polaris-RadioButton__Input" aria-describedby="optionalHelpText" value="">
+                        <%= form.radio_button :position,"right_bottom",class: "Polaris-RadioButton__Input",id: "pstnRightBottom" %>
                         <span class="Polaris-RadioButton__Backdrop"></span>
                         <span class="Polaris-RadioButton__Icon"></span>
                       </span>
@@ -117,7 +117,7 @@
                   <label class="Polaris-Choice" for="pstnLeftBottom">
                     <span class="Polaris-Choice__Control">
                       <span class="Polaris-RadioButton">
-                        <input id="pstnLeftBottom" name="popup_setting[position]" type="radio" class="Polaris-RadioButton__Input" aria-describedby="optionalHelpText" value="">
+                        <%= form.radio_button :position,"left_bottom",class: "Polaris-RadioButton__Input",id: "pstnLeftBottom" %>
                         <span class="Polaris-RadioButton__Backdrop"></span>
                         <span class="Polaris-RadioButton__Icon"></span>
                       </span>
