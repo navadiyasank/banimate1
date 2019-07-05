@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_25_215629) do
+ActiveRecord::Schema.define(version: 2019_07_05_113319) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "popup_settings", force: :cascade do |t|
+    t.integer "position", default: 1
+    t.boolean "status"
+    t.bigint "shop_id"
+    t.float "cart_amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shop_id"], name: "index_popup_settings_on_shop_id"
+  end
 
   create_table "shops", force: :cascade do |t|
     t.string "shopify_domain", null: false
@@ -23,4 +33,5 @@ ActiveRecord::Schema.define(version: 2019_06_25_215629) do
     t.index ["shopify_domain"], name: "index_shops_on_shopify_domain", unique: true
   end
 
+  add_foreign_key "popup_settings", "shops"
 end

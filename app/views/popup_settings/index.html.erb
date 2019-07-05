@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Popup Settings</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Position</th>
+      <th>Status</th>
+      <th>Shop</th>
+      <th>Cart amount</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @popup_settings.each do |popup_setting| %>
+      <tr>
+        <td><%= popup_setting.position %></td>
+        <td><%= popup_setting.status %></td>
+        <td><%= popup_setting.shop %></td>
+        <td><%= popup_setting.cart_amount %></td>
+        <td><%= link_to 'Show', popup_setting %></td>
+        <td><%= link_to 'Edit', edit_popup_setting_path(popup_setting) %></td>
+        <td><%= link_to 'Destroy', popup_setting, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Popup Setting', new_popup_setting_path %>

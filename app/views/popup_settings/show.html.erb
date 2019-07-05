@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Position:</strong>
+  <%= @popup_setting.position %>
+</p>
+
+<p>
+  <strong>Status:</strong>
+  <%= @popup_setting.status %>
+</p>
+
+<p>
+  <strong>Shop:</strong>
+  <%= @popup_setting.shop %>
+</p>
+
+<p>
+  <strong>Cart amount:</strong>
+  <%= @popup_setting.cart_amount %>
+</p>
+
+<%= link_to 'Edit', edit_popup_setting_path(@popup_setting) %> |
+<%= link_to 'Back', popup_settings_path %>
