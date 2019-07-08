@@ -16,6 +16,7 @@ class Shop < ActiveRecord::Base
     asset_integrate
   end
 
+  #this will creates snippet in current theme and include snippet in theme.liquid
   def asset_integrate
   	ShopifyAPI::Base.site = "https://#{ShopifyApp.configuration.api_key}:#{self.shopify_token}@#{self.shopify_domain}/admin/"
     ShopifyAPI::Base.api_version = ShopifyApp.configuration.api_version
