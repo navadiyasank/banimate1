@@ -18,13 +18,14 @@ class Shop < ActiveRecord::Base
 
   def asset_integrate
   	ShopifyAPI::Base.site = "https://#{ShopifyApp.configuration.api_key}:#{self.shopify_token}@#{self.shopify_domain}/admin/"
+    ShopifyAPI::Base.api_version = ShopifyApp.configuration.api_version
     @theme = ShopifyAPI::Theme.find(:all).where(role: 'main').first
     @asset = ShopifyAPI::Asset.create(key: 'snippets/banimate.liquid', value: 'This is for testing ', theme_id: @theme.id) rescue nil
 
     @asset = ShopifyAPI::Asset.find('layout/theme.liquid', :params => { :theme_id => @theme.id}) rescue nil
     if @asset.present?
       @asset_value = @asset.value
-      @asset.update_attributes(theme_id: @theme.id,value: @asset_value.gsub("</body>","{% comment %}This is for banimate.{% endcomment %}{% include 'banimate' %}</body>")) unless @asset_value.include?("{% include 'banimate' %}")
+      @asset.update_attributes(theme_id: @theme.id,value: @asset_value.gsub("</body>","{% comment %}This is from banimate.{% endcomment %}{% include 'banimate' %}</body>")) unless @asset_value.include?("{% include 'banimate' %}")
     end
   end
 
