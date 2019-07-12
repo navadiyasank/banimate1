@@ -30,6 +30,25 @@ class Shop < ActiveRecord::Base
         window.banimate.cart_total = {{ cart.total_price }}
         console.log(window.banimate.cart)
 
+        function readCookie(name) {
+          return (name = new RegExp('(?:^|;\\\\s*)' + ('' + name).replace(/[-[\\]{}()*+?.,\\\\^$|#\\s]/g, '\\\\$&') + '=([^;]*)').exec(document.cookie)) && name[1];
+        }
+
+        function writeCookie(cName,cVal,cExpMin=0) {
+          newDate = new Date;
+          deleteCookie(cName);
+          if(cExpMin==0){
+            document.cookie = cName+\"=\"+cVal+\";\"
+          }
+          else{
+            document.cookie = cName+\"=\"+cVal+\";expires=\"+new Date((newDate.getTime() + newDate.getTimezoneOffset() * 60000) + (cExpMin * 60000))+\";path=/;\"
+          }
+          
+        }
+        function deleteCookie(name) {
+          document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+
         function start(){
           window.loadScript = function(url, callback) {
             var script = document.createElement(\"script\");
@@ -65,28 +84,41 @@ class Shop < ActiveRecord::Base
                   var selectors = $(\"input[name='add'] , button[name='add'], #add-to-cart, #AddToCartText ,#AddToCart, .product-form__cart-submit\")
                   selectors.addClass('banimate-atc-btn');
                   $(document).on('click', '.banimate-atc-btn', function(event) {
-                    event.preventDefault();
-                    $.ajax({
-                      type: 'POST', 
-                      url: '/cart/add.js',
-                      dataType: 'json', 
-                      data: $(this).parents('form').serialize(),
-                      success:function(data){
-                        $.getJSON('/cart.js', function(cart) {
-                          var cart_total = parseFloat(cart.total_price/100)
-                          console.log(cart_total);
-                          if(cart_total >= banimate_cart_amount){
-                            alert('success'); 
-                            $('.banimate_wrappar').show();
-                            $('body').addClass('banimate_wrappar_open');
-                            $(document).on('click', '.banimate_close', function(event) {
-                              window.location.href = '/cart';
-                              $('body').removeClass('banimate_wrappar_open');
-                            });
-                          }
-                        });
-                      }
-                    });
+                    if(!readCookie('bAnimateAchieved')){
+                      event.preventDefault();
+                      $.ajax({
+                        type: 'POST', 
+                        url: '/cart/add.js',
+                        dataType: 'json', 
+                        data: $(this).parents('form').serialize(),
+                        success:function(data){
+                          $.getJSON('/cart.js', function(cart) {
+                            var cart_total = parseFloat(cart.total_price/100)
+                            console.log(cart_total);
+                            if(cart_total >= banimate_cart_amount){
+                              alert('success'); 
+                              writeCookie('bAnimateAchieved',true)
+                              $('.banimate_wrappar.achieved').show();
+                              $('body').addClass('banimate_wrappar_open');
+                              $(document).on('click', '.banimate_close', function(event) {
+                                window.location.href = '/cart';
+                                $('body').removeClass('banimate_wrappar_open');
+                              });
+                            }else{
+                              if(!readCookie('bAnimateNotAchieved')){
+                                writeCookie('bAnimateNotAchieved',true)
+                                $('.banimate_wrappar.not-achieved').show();
+                                $('body').addClass('banimate_wrappar_open');
+                                $(document).on('click', '.banimate_close', function(event) {
+                                  window.location.href = '/cart';
+                                  $('body').removeClass('banimate_wrappar_open');
+                                });
+                              }
+                            }
+                          });
+                        }
+                      });
+                    }
                   });
                 }
               }
@@ -107,13 +139,33 @@ class Shop < ActiveRecord::Base
         }
       </script>
 
-      <div class='banimate_wrappar' style='display:none;''>
-        <div class='popup-overlay'></div>
+      <div class='banimate_wrappar achieved' style='display:none;'>
+        <!-- <div class='popup-overlay'></div> -->
         <div class='banimate_popupBox'>
-          <div class='banimate_mainHead'>       
+          <!-- <div class='banimate_mainHead'>       
             <p class='banimate_popup-heading'>Free shipping</p>
             <span class='banimate_close'>&times;</span>        
-          </div> 
+          </div> -->
+
+          <div class='banimate_mainContent'>
+            <div class='popup-Image'>
+              <img src='#{ENV['DOMAIN']}/banimate.gif'>
+            </div>
+          </div>
+
+          <!-- <div class='banimate_popup-footer'>
+            <button type='button' class='btn btn-success subscribe-btn'  style='background: rgba(92, 184, 92, 1);color: rgba(255, 255, 255, 1);'>Continue</button> 
+          </div> -->
+        </div>
+      </div>
+
+      <div class='banimate_wrappar not-achieved' style='display:none;'>
+        <!-- <div class='popup-overlay'></div> -->
+        <div class='banimate_popupBox'>
+          <!-- <div class='banimate_mainHead'>       
+            <p class='banimate_popup-heading'>Free shipping</p>
+            <span class='banimate_close'>&times;</span>        
+          </div> -->
 
           <div class='banimate_mainContent'>
             <div class='popup-Image'>
@@ -121,9 +173,9 @@ class Shop < ActiveRecord::Base
             </div>
           </div>
 
-          <div class='banimate_popup-footer'>
+          <!-- <div class='banimate_popup-footer'>
             <button type='button' class='btn btn-success subscribe-btn'  style='background: rgba(92, 184, 92, 1);color: rgba(255, 255, 255, 1);'>Continue</button> 
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -153,9 +205,8 @@ class Shop < ActiveRecord::Base
           margin:0;
         }
         .banimate_popupBox{
-          background-color: #fefefe;
+          background-color: transparent;
           margin: auto;
-          border: 1px solid #888;
           max-width: 600px;
           width: 100%;
           position: absolute;
@@ -209,7 +260,6 @@ class Shop < ActiveRecord::Base
         }
         .banimate_popupBox .banimate_mainContent{
           padding:20px;
-          border-bottom: 1px solid #e5e5e5;
         }
         .banimate_mainContent .popup-Image{
           text-align:center;
