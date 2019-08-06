@@ -29,153 +29,50 @@ class Shop < ActiveRecord::Base
         }
         window.banimate.cart_total = {{ cart.total_price }}
         console.log(window.banimate.cart)
-
-        function readCookie(name) {
-          return (name = new RegExp('(?:^|;\\\\s*)' + ('' + name).replace(/[-[\\]{}()*+?.,\\\\^$|#\\s]/g, '\\\\$&') + '=([^;]*)').exec(document.cookie)) && name[1];
-        }
-
-        function writeCookie(cName,cVal,cExpMin=0) {
-          newDate = new Date;
-          deleteCookie(cName);
-          if(cExpMin==0){
-            document.cookie = cName+\"=\"+cVal+\";\"
-          }
-          else{
-            document.cookie = cName+\"=\"+cVal+\";expires=\"+new Date((newDate.getTime() + newDate.getTimezoneOffset() * 60000) + (cExpMin * 60000))+\";path=/;\"
-          }
-          
-        }
-        function deleteCookie(name) {
-          document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-        }
-
-        function start(){
-          window.loadScript = function(url, callback) {
-            var script = document.createElement(\"script\");
-            script.type = \"text/javascript\";
-            // If the browser is Internet Explorer
-            if (script.readyState){
-              script.onreadystatechange = function() {
-                if (script.readyState == \"loaded\" || script.readyState == \"complete\") {
-                  script.onreadystatechange = null;
-                  callback();
-                }
-              };
-              // For any other browser
-            } else {
-              script.onload = function() {
-                callback();
-              };
+        $.ajax({
+          type:'GET',
+          url: window.banimate.app_url+'/frontend/get_banimate_details',
+          data : {shopify_domain : window.banimate.shopify_domain},
+          crossDomain: true,
+          success:function(data){
+            var banimate_cart_amount = data.cart_amount;
+            var banimate_position = data.position;
+            console.log('response==',data);
+            if(banimate_cart_amount > 0){
+              var selectors = $(\"input[name='add'] , button[name='add'], #add-to-cart, #AddToCartText ,#AddToCart, .product-form__cart-submit\")
+              selectors.addClass('banimate-atc-btn');
+              $(document).on('click', '.banimate-atc-btn', function(event) {
+                event.preventDefault();
+                $.ajax({
+                  type: 'POST', 
+                  url: '/cart/add.js',
+                  dataType: 'json', 
+                  data: $(this).parents('form').serialize(),
+                  success:function(data){
+                    $.getJSON('/cart.js', function(cart) {
+                      var cart_total = parseFloat(cart.total_price/100)
+                      console.log(cart_total);
+                      if(cart_total >= banimate_cart_amount){
+                        $('.banimate_popupBox').addClass(banimate_position);
+                        $('.banimate_wrappar.achieved').show();
+                        $('body').addClass('banimate_wrappar_open');
+                      }
+                    });
+                  }
+                });
+              });
             }
-            script.src = url;
-            document.getElementsByTagName(\"head\")[0].appendChild(script);
-          };
-          window.bAnimateStart = function($) {
-            console.log('bAnimate Start.....');
-            $.ajax({
-              type:'GET',
-              url: window.banimate.app_url+'/frontend/get_banimate_details',
-              data : {shopify_domain : window.banimate.shopify_domain},
-              crossDomain: true,
-              success:function(data){
-                var banimate_cart_amount = data.cart_amount;
-                console.log('response==',data);
-                if(banimate_cart_amount > 0){
-                  var selectors = $(\"input[name='add'] , button[name='add'], #add-to-cart, #AddToCartText ,#AddToCart, .product-form__cart-submit\")
-                  selectors.addClass('banimate-atc-btn');
-                  $(document).on('click', '.banimate-atc-btn', function(event) {
-                    if(!readCookie('bAnimateAchieved')){
-                      event.preventDefault();
-                      $.ajax({
-                        type: 'POST', 
-                        url: '/cart/add.js',
-                        dataType: 'json', 
-                        data: $(this).parents('form').serialize(),
-                        success:function(data){
-                          $.getJSON('/cart.js', function(cart) {
-                            var cart_total = parseFloat(cart.total_price/100)
-                            console.log(cart_total);
-                            if(cart_total >= banimate_cart_amount){
-                              alert('success'); 
-                              writeCookie('bAnimateAchieved',true)
-                              $('.banimate_wrappar.achieved').show();
-                              $('body').addClass('banimate_wrappar_open');
-                              $(document).on('click', '.banimate_close', function(event) {
-                                window.location.href = '/cart';
-                                $('body').removeClass('banimate_wrappar_open');
-                              });
-                            }else{
-                              if(!readCookie('bAnimateNotAchieved')){
-                                writeCookie('bAnimateNotAchieved',true)
-                                $('.banimate_wrappar.not-achieved').show();
-                                $('body').addClass('banimate_wrappar_open');
-                                $(document).on('click', '.banimate_close', function(event) {
-                                  window.location.href = '/cart';
-                                  $('body').removeClass('banimate_wrappar_open');
-                                });
-                              }
-                            }
-                          });
-                        }
-                      });
-                    }
-                  });
-                }
-              }
-            });
           }
-        }
-        start();
-
-        if ((typeof(jQuery) == 'undefined') || (parseInt(jQuery.fn.jquery) == 3 && parseFloat(jQuery.fn.jquery.replace(/^1\./,"")) < 4.0)) {
-          console.log('Inside if in banimate');
-          loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js', function() {
-            jQuery340 = jQuery.noConflict(true);
-              bAnimateStart(jQuery340);
-          });
-        }else{  
-          console.log('Inside else in banimate');
-              bAnimateStart(jQuery);
-        }
+        });
       </script>
 
       <div class='banimate_wrappar achieved' style='display:none;'>
-        <!-- <div class='popup-overlay'></div> -->
         <div class='banimate_popupBox'>
-          <!-- <div class='banimate_mainHead'>       
-            <p class='banimate_popup-heading'>Free shipping</p>
-            <span class='banimate_close'>&times;</span>        
-          </div> -->
-
           <div class='banimate_mainContent'>
             <div class='popup-Image'>
               <img src='#{ENV['DOMAIN']}/banimate.gif'>
             </div>
           </div>
-
-          <!-- <div class='banimate_popup-footer'>
-            <button type='button' class='btn btn-success subscribe-btn'  style='background: rgba(92, 184, 92, 1);color: rgba(255, 255, 255, 1);'>Continue</button> 
-          </div> -->
-        </div>
-      </div>
-
-      <div class='banimate_wrappar not-achieved' style='display:none;'>
-        <!-- <div class='popup-overlay'></div> -->
-        <div class='banimate_popupBox'>
-          <!-- <div class='banimate_mainHead'>       
-            <p class='banimate_popup-heading'>Free shipping</p>
-            <span class='banimate_close'>&times;</span>        
-          </div> -->
-
-          <div class='banimate_mainContent'>
-            <div class='popup-Image'>
-              <img src='https://image.shutterstock.com/image-vector/congratulations-hand-lettering-modern-brush-260nw-532058731.jpg'>
-            </div>
-          </div>
-
-          <!-- <div class='banimate_popup-footer'>
-            <button type='button' class='btn btn-success subscribe-btn'  style='background: rgba(92, 184, 92, 1);color: rgba(255, 255, 255, 1);'>Continue</button> 
-          </div> -->
         </div>
       </div>
 
@@ -200,10 +97,6 @@ class Shop < ActiveRecord::Base
           margin:0;
           font-size:14px;
         }
-        .banimate_popupBox .banimate_mainContent h4{
-          font-size:18px;
-          margin:0;
-        }
         .banimate_popupBox{
           background-color: transparent;
           margin: auto;
@@ -223,41 +116,6 @@ class Shop < ActiveRecord::Base
           opacity: 1;
           visibility: visible;
         }
-        .banimate_popupBox .banimate_mainHead{
-          display: flex;
-          align-items:center;
-          justify-content:space-between;
-          padding: 20px;
-          border-bottom: 1px solid #e5e5e5;
-        }
-        .popup-overlay {
-          background: rgba(0,0,0,0.7);
-          position: fixed;
-          left: 0;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          display: none;
-        }
-        .banimate_wrappar_open .popup-overlay {
-          display: block
-        }
-        .banimate_close {
-          color: #aaaaaa;    
-          font-size: 28px;
-          line-height: 18px;
-          font-weight: bold;   
-        }
-        .banimate_close:hover,
-        .banimate_close:focus {
-          color: #000;
-          text-decoration: none;
-          cursor: pointer;
-        }
-        .banimate_popupBox .banimate_popup-heading{
-          font-size:18px;   
-          font-weight:bold;
-        }
         .banimate_popupBox .banimate_mainContent{
           padding:20px;
         }
@@ -266,35 +124,38 @@ class Shop < ActiveRecord::Base
           padding:20px 0;
         }
         .banimate_mainContent .popup-Image img{
-          width:280px;
-          height:215px;
           object-fit:cover;
         }
-        .banimate_popupBox .banimate_popup-footer{
-          padding:20px;
-          text-align:right;
+        .banimate_popupBox.bottom_left{
+          left: 0;
+          top: auto;
+          bottom: 0;
+          transform: translate(0, 0%) scale(0.5);
         }
-        .banimate_popup-footer .subscribe-btn{
-          border: 0 none;
-          color: #fff;
-          background-color: #5cb85c;
-          border-color: #4cae4c;
-          display: inline-block;
-          padding: 6px 12px;
-          margin-bottom: 0;
-          font-size: 14px;
-          font-weight: normal;
-          line-height: 1.42857143;
-          text-align: center;
-          white-space: nowrap;
-          vertical-align: middle;
-          border-radius: 4px;
+        .banimate_wrappar_open .bottom_left{
+          transform: translate(0, 0) scale(1) !important;
+          left: 0;
+          top: auto;
+          bottom: 0;
+        }
+        .banimate_popupBox.bottom_right{
+          right: 0;
+          top: auto;
+          bottom: 0;
+          transform: translate(0, 0%) scale(0.5);
+          margin: 0 0 0 auto;
+        }
+        .banimate_wrappar_open .bottom_right{
+          transform: translate(0, 0) scale(1) !important;
+          right: 0;
+          top: auto;
+          bottom: 0;
         }
         @media screen and (max-width:767px){
           .banimate_popupBox{
-              max-width:90%;
-              max-height:80vh;
-              overflow: auto;
+            max-width:90%;
+            max-height:80vh;
+            overflow: auto;
           }
         }
       </style>
